@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM golang:1.17 as builder
+FROM --platform=$BUILDPLATFORM docker.io/golang:1.21 as builder
 
 ARG TARGETOS TARGETARCH
 WORKDIR /workspace
@@ -18,8 +18,7 @@ COPY Makefile Makefile
 
 RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH make build
 
-FROM alpine:3.10
+FROM registry.access.redhat.com/ubi9-minimal:9.3
 WORKDIR /
-RUN apk add --no-cache ca-certificates
 COPY --from=builder /workspace/bin/security-labeller /bin/security-labeller
 ENTRYPOINT ["/bin/security-labeller"]
